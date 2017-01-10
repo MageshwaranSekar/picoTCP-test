@@ -10,9 +10,15 @@
 #include "pico_https_util.h"
 #include "pico_https_glue.h"
 #include "wolfssl/ssl.h"
+#include "custom_memalloc.h"
+
+
+#define HEAPSIZE 200000
+
 
 #ifndef USE_TLS_PSK
 #define PSK_SERVER_CB_ARG
+
 const unsigned char cert_pem[]="Certificate:\n\
     Data:\n\
         Version: 3 (0x2)\n\
@@ -308,10 +314,14 @@ static unsigned int my_psk_server_cb(WOLFSSL* ssl, const char* identity, unsigne
     return 4;
 }
 #endif
+
+
+char ch[HEAPSIZE];
 int main(){
   struct pico_ip4 ipaddr, netmask;
   struct pico_device* dev;
 
+	init_heap(ch, HEAPSIZE);
   /* initialise the TCP stack */
   pico_stack_init();
 
